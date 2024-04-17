@@ -24,29 +24,34 @@ const Login = () => {
     try {
       const url = "/api/users/login";
       const { data: res } = await axiosPrivate.post(url, data);
-      console.log(res);
+      // console.log(res);
       // localStorage.setItem("token", res.);
       setAuth({userdata : res.data, role : res.data.type, accessToken: res.accesstoken})
 
-      if(res.data.type === "admin"){
-        navigate("/admin",{replace:true});
-      }
-      if(res.data.type === "buyer"){
-        navigate("/customer/profile",{replace:true});
-      }
-      if(res.data.type === "seller"){
-        navigate("/seller/profile",{replace:true});
+      // Redirect based on user type
+      console.log(res.data.type)
+      switch (res.data.type) {
+        case "admin":
+          navigate("/admin", { replace: true });
+          break;
+        case "buyer":
+          navigate("/customer/profile", { replace: true });
+          break;
+        case "seller":
+          navigate("/seller/profile", { replace: true });
+          break;
+        default:
+          // Consider a default case if `type` might not be any of the expected values
+          navigate("/", { replace: true }); // navigate to a default route if user type is unknown
+          break;
       }
 
-    } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setError(error.response.data.message);
-      }
+  } catch (error) {
+    console.log(error);
+    if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+      setError(error.response.data.message);
     }
+  }
   };
 
   return (
